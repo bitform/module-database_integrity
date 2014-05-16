@@ -5719,6 +5719,7 @@ $STRUCTURE["2.1.4"]["tables"]["view_filters"] = array(
     "Default" => ""
   )
 );
+
 $STRUCTURE["2.1.4"]["tables"]["view_tabs"] = array(
   array(
     "Field"   => "view_id",
@@ -5740,5 +5741,121 @@ $STRUCTURE["2.1.4"]["tables"]["view_tabs"] = array(
     "Null"    => "YES",
     "Key"     => "",
     "Default" => ""
+  )
+);
+
+$STRUCTURE["2.1.5"] = $STRUCTURE["2.1.4"];
+$STRUCTURE["2.1.5"]["tables"]["forms"] = array(
+  array(
+    "Field"   => "form_id",
+    "Type"    => "mediumint(9) unsigned",
+    "Null"    => "NO",
+    "Key"     => "PRI",
+    "Default" => ""
+  ),
+  array(
+    "Field"   => "form_type",
+    "Type"    => "enum('internal','external','form_builder')",
+    "Null"    => "NO",
+    "Key"     => "",
+    "Default" => "external"
+  ),
+  array(
+    "Field"   => "access_type",
+    "Type"    => "enum('admin','public','private')",
+    "Null"    => "NO",
+    "Key"     => "",
+    "Default" => "public"
+  ),
+  array(
+    "Field"   => "submission_type",
+    "Type"    => "enum('code','direct')",
+    "Null"    => "YES",
+    "Key"     => "",
+    "Default" => ""
+  ),
+  array(
+    "Field"   => "date_created",
+    "Type"    => "datetime",
+    "Null"    => "NO",
+    "Key"     => "",
+    "Default" => ""
+  ),
+  array(
+    "Field"   => "is_active",
+    "Type"    => "enum('yes','no')",
+    "Null"    => "NO",
+    "Key"     => "",
+    "Default" => "no"
+  ),
+  array(
+    "Field"   => "is_initialized",
+    "Type"    => "enum('yes','no')",
+    "Null"    => "NO",
+    "Key"     => "",
+    "Default" => "no"
+  ),
+  array(
+    "Field"   => "is_complete",
+    "Type"    => "enum('yes','no')",
+    "Null"    => "NO",
+    "Key"     => "",
+    "Default" => "no"
+  ),
+  array(
+    "Field"   => "is_multi_page_form",
+    "Type"    => "enum('yes','no')",
+    "Null"    => "NO",
+    "Key"     => "",
+    "Default" => "no"
+  ),
+  array(
+    "Field"   => "form_name",
+    "Type"    => "varchar(255)",
+    "Null"    => "NO",
+    "Key"     => "",
+    "Default" => ""
+  ),
+  array(
+    "Field"   => "form_url",
+    "Type"    => "varchar(255)",
+    "Null"    => "YES",
+    "Key"     => "",
+    "Default" => ""
+  ),
+  array(
+    "Field"   => "redirect_url",
+    "Type"    => "varchar(255)",
+    "Null"    => "YES",
+    "Key"     => "",
+    "Default" => ""
+  ),
+  array(
+    "Field"   => "auto_delete_submission_files",
+    "Type"    => "enum('yes','no')",
+    "Null"    => "NO",
+    "Key"     => "",
+    "Default" => "yes"
+  ),
+  array(
+    "Field"   => "submission_strip_tags",
+    "Type"    => "enum('yes','no')",
+    "Null"    => "NO",
+    "Key"     => "",
+    "Default" => "yes"
+  ),
+  array(
+    "Field"   => "edit_submission_page_label",
+    "Type"    => "text",
+    "Null"    => "YES",
+    "Key"     => "",
+    "Default" => ""
+  ),
+  array(
+    "Field"   => "add_submission_button_label",
+    "Type"    => "varchar(255)",
+    "Null"    => "YES",
+    "Key"     => "",
+    "Default" => "{\$LANG.word_add}"
   )
 );
