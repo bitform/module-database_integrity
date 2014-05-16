@@ -2,8 +2,9 @@
 
 
 /**
- * Figures out which (if any) of the installed modules have a database_integrity.php file
- * defined in their root, for use by this module.
+ * Figures out which (if any) of the installed modules have a database_integrity.php file defined
+ * in their root, for use by this module. As of 2.0.2, this only returns modules that are actually
+ * installed.
  *
  * @return array all compatible module information
  */
@@ -20,7 +21,8 @@ function dbi_get_compatible_modules()
     if (!is_file("$g_root_dir/modules/$module_folder/database_integrity.php"))
       continue;
 
-    $compatible_modules[] = $module_info;
+    if ($module_info["is_installed"] == "yes")
+      $compatible_modules[] = $module_info;
   }
 
   return $compatible_modules;
