@@ -151,7 +151,7 @@ function di_check_component_table_columns($component_info, $table_name)
     );
   }
 
-  $table_name_without_prefix = preg_replace("/{$g_table_prefix}/", "", $table_name);
+  $table_name_without_prefix = preg_replace("/^{$g_table_prefix}/", "", $table_name);
   foreach ($component_info["tables"][$table_name_without_prefix] as $desired_column_info)
   {
     $curr_column_name = $desired_column_info["Field"];

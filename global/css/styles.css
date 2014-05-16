@@ -30,3 +30,6 @@ table.log_table textarea {
   line-height: 10pt;
   padding: 10px;
 }
+.list_table td img {
+  margin-top: 4px;
+}
