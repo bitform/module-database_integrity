@@ -4065,13 +4065,6 @@ $STRUCTURE["2.1.4"]["tables"]["email_templates"] = array(
     "Default" => "all"
   ),
   array(
-    "Field"   => "view_mapping_view_id",
-    "Type"    => "mediumint(9)",
-    "Null"    => "YES",
-    "Key"     => "",
-    "Default" => ""
-  ),
-  array(
     "Field"   => "limit_email_content_to_fields_in_view",
     "Type"    => "mediumint(9)",
     "Null"    => "YES",
