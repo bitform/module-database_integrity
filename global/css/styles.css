@@ -33,3 +33,7 @@ table.log_table textarea {
 .list_table td img {
   margin-top: 4px;
 }
+
+.index_link_table td {
+  padding-bottom: 5px;
+}

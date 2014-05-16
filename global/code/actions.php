@@ -44,6 +44,18 @@ switch ($action)
     echo "{ \"tables\": " . ft_convert_to_json($tables) . " }";
     break;
 
+  // verifies the hooks for a particular module. This is much simpler than the table test. It just
+  case "verify_module_hooks":
+    $module_id = $request["module_id"];
+
+    $module_info   = ft_get_module($module_id);
+    $module_folder  = $module_info["module_folder"];
+    $module_version = $module_info["version"];
+    $result = dbi_verify_module_hooks($module_folder, $module_version);
+
+    echo "{ \"module_id\": $module_id, \"module_folder\": \"$module_folder\", \"module_name\": \"{$module_info["module_name"]}\", \"result\": \"$result\" }";
+    break;
+
   case "process_table":
     $component = $request["component"];
     if ($component == "core")

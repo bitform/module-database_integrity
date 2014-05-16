@@ -12,6 +12,8 @@ var di = {
   current_component_has_problems: false,
   any_tested_component_has_problem: false,
 
+  hook_verification_failed_module_ids: [],
+
 
   /**
    * This initiates the whole testing process. Testing works like so:
@@ -41,7 +43,7 @@ var di = {
 
 
   /**
-   * Called for each component.
+   * Called for each component on the Table Verification page.
    */
   start_component_test: function() {
     $("#result__" + di.current_component).html("<img src=\"images/loading.gif\" />");
@@ -53,6 +55,7 @@ var di = {
       success:  di.start_process_tables
     })
   },
+
 
   /**
    * Called after a test for a component has been started. It's passed a single array back
@@ -181,6 +184,128 @@ var di = {
 
   log_message: function(message) {
     $("#full_log").val($("#full_log").val() + message + "\n");
+  },
+
+
+  // ----------------------------------------------------------------------------------------------
+
+  // Hook Verification
+
+  /**
+   * This initiates the hook verification phase.
+   *  1. start_component_test() is called. That calls a function on the server
+   *     that returns some log information & an array of tables to test.
+   *  2. it then tests various things for each table. When complete, it re-calls
+   *     start_component_test() for the next component.
+   */
+  start_hook_verification: function() {
+    di.clear_logs();
+    di.is_processing = true;
+    di.component_list = [];
+    di.hook_verification_failed_module_ids = [];
+
+    $(".components:checked").each(function() {
+      di.component_list.push(this.value);
+      $("#result__" + this.value).removeClass("passed failed").addClass("untested").html(g.messages["word_untested"]);
+    });
+
+    if (!di.component_list.length) {
+      ft.display_message("ft_message", 0, g.messages["validation_no_components_selected"]);
+      return;
+    }
+
+    di.current_component = di.component_list[0];
+    di.start_hook_verification_component_test();
+  },
+
+
+  /**
+   * Called for each component.
+   */
+  start_hook_verification_component_test: function() {
+    $("#result__" + di.current_component).html("<img src=\"images/loading.gif\" />");
+    $.ajax({
+      url:      g.root_url + "/modules/database_integrity/global/code/actions.php",
+      data:     { action: "verify_module_hooks", module_id: di.current_component },
+      type:     "POST",
+      dataType: "json",
+      success:  di.display_hook_verification_result
+    })
+  },
+
+  display_hook_verification_result: function(json) {
+
+    switch (json.result) {
+      case "pass":
+        var message = json.module_name + ": Pass!";
+        di.log_message(message);
+        break;
+      case "too_many_hooks":
+    	var message = json.module_name + ": ERROR, too many hooks";
+        di.log_message(message);
+        di.log_error(message);
+        di.hook_verification_failed_module_ids.push(json.module_id);
+        break;
+      case "missing_hooks":
+        var message = json.module_name + ": ERROR, missing hooks";
+        di.log_message(message);
+        di.log_error(message);
+        di.hook_verification_failed_module_ids.push(json.module_id);
+        break;
+      case "invalid_hooks":
+    	var message = json.module_name + ": ERROR, invalid hooks";
+        di.log_message(message);
+        di.log_error(message);
+        di.hook_verification_failed_module_ids.push(json.module_id);
+        break;
+    }
+
+    // now process the next table, continue to the next component or display the "complete" message
+    var next_table = null;
+    for (var i=0; i<di.current_component_tables.length-1; i++) {
+      if (di.current_component_tables[i] == di.current_component_table) {
+        next_table = di.current_component_tables[i+1];
+        break;
+      }
+    }
+
+    if (next_table != null) {
+      di.current_component_table = next_table;
+      di.process_tables();
+    } else {
+      $("#result__" + di.current_component).removeClass("untested");
+      if (json.result == "pass") {
+        $("#result__" + di.current_component).addClass("passed").html(g.messages["word_passed"]);
+      } else {
+        $("#result__" + di.current_component).addClass("failed").html(g.messages["word_failed"]);
+      }
+
+      var next_component = null;
+      for (var i=0; i<di.component_list.length-1; i++) {
+        if (di.component_list[i] == di.current_component) {
+          next_component = di.component_list[i+1];
+          break;
+        }
+      }
+      if (next_component != null) {
+        // reset some stuff for the next pass
+        di.current_component_has_problems = false;
+        di.current_component_table = null;
+        di.current_component = next_component;
+        di.start_hook_verification_component_test();
+
+      // here we're done!
+      } else {
+        if (di.hook_verification_failed_module_ids.length) {
+          ft.display_message("ft_message", 0, g.messages["notify_hook_verification_complete_problems"]);
+        } else {
+          ft.display_message("ft_message", 1, g.messages["notify_test_complete_no_problems"]);
+        }
+        return;
+      }
+    }
   }
+
+
 
 };

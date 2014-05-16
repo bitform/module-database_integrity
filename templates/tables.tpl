@@ -6,7 +6,9 @@
     <td class="title">
       <a href="../../admin/modules">{$LANG.word_modules}</a>
       <span class="joiner">&raquo;</span>
-      {$L.module_name}
+      <a href="./">{$L.module_name}</a>
+      <span class="joiner">&raquo;</span>
+      {$L.phrase_table_verification}
     </td>
   </tr>
   </table>
@@ -14,7 +16,7 @@
   {include file="messages.tpl"}
 
   <div class="margin_bottom_large">
-    {$L.text_module_intro}
+    {$L.text_table_verification_intro}
   </div>
 
   <table class="list_table" cellspacing="1" cellpadding="0" style="width: 500px">
@@ -45,7 +47,7 @@
   </table>
 
   <p>
-    <input type="button" value="Test Selected Components &raquo;" onclick="di.start()" />
+    <input type="button" value="{$L.phrase_test_selected_components}" onclick="di.start()" />
   </p>
 
 	<table cellspacing="1" cellpadding="1" width="100%" class="log_table">
