@@ -1824,3 +1824,5 @@ $STRUCTURE["2.1.0"]["tables"]["views"] = array(
     "Default" => "no"
   )
 );
+
+$STRUCTURE["2.1.1"] = $STRUCTURE["2.1.0"];
