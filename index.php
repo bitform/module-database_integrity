@@ -10,7 +10,45 @@ $core_version = ($settings["release_type"] == "beta") ? "{$settings["program_ver
 
 // ---------------------------------------
 // *** example for generating config file for a module. Make sure you omit the table prefixes! ***
-//echo dbi_generate_db_config_file(array("module_table1", "module_table2"));
+/*$tables = array(
+  "account_settings",
+  "accounts",
+  "client_forms",
+  "client_views",
+  "email_template_edit_submission_views",
+  "email_template_recipients",
+  "email_templates",
+  "field_options",
+  "field_settings",
+  "field_type_setting_options",
+  "field_type_settings",
+  "field_types",
+  "form_email_fields",
+  "form_fields",
+  "forms",
+  "hooks",
+  "list_groups",
+  "menu_items",
+  "menus",
+  "module_js_error_logs",
+  "module_menu_items",
+  "modules",
+  "multi_page_form_urls",
+  "new_view_submission_defaults",
+  "option_lists",
+  "public_form_omit_list",
+  "public_view_omit_list",
+  "sessions",
+  "settings",
+  "themes",
+  "view_columns",
+  "view_fields",
+  "view_filters",
+  "view_tabs",
+  "views"
+);
+*/
+//echo dbi_generate_db_config_file($tables, "core", "2.1.0");
 //exit;
 // ---------------------------------------
 

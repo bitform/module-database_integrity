@@ -20,23 +20,18 @@ var di = {
    *  2. it then tests various things for each table. When complete, it re-calls
    *     start_component_test() for the next component.
    */
-  start: function()
-  {
+  start: function() {
     di.clear_logs();
     di.is_processing = true;
     di.component_list = [];
 
-    $$(".components:checked").each(function(el) {
-      di.component_list.push(el.value);
-      $("result__" + el.value).removeClassName("passed");
-      $("result__" + el.value).removeClassName("failed");
-      $("result__" + el.value).addClassName("untested");
-      $("result__" + el.value).innerHTML = g.messages["word_untested"];
+    $(".components:checked").each(function() {
+      di.component_list.push(this.value);
+      $("#result__" + this.value).removeClass("passed failed").addClass("untested").html(g.messages["word_untested"]);
     });
 
-    if (!di.component_list.length)
-    {
-      ft.display_message("ft_message", false, g.messages["validation_no_components_selected"]);
+    if (!di.component_list.length) {
+      ft.display_message("ft_message", 0, g.messages["validation_no_components_selected"]);
       return;
     }
 
@@ -44,19 +39,19 @@ var di = {
     di.start_component_test();
   },
 
+
   /**
    * Called for each component.
    */
-  start_component_test: function()
-  {
-    $("result__" + di.current_component).innerHTML = "<img src=\"images/loading.gif\" />";
-
-    var page_url = g.root_url + "/modules/database_integrity/global/code/actions.php";
-    new Ajax.Request(page_url, {
-      parameters: { action: "start_component_test", component: di.current_component },
-      method:     'post',
-      onSuccess:  di.start_process_tables
-    });
+  start_component_test: function() {
+    $("#result__" + di.current_component).html("<img src=\"images/loading.gif\" />");
+    $.ajax({
+      url:      g.root_url + "/modules/database_integrity/global/code/actions.php",
+      data:     { action: "start_component_test", component: di.current_component },
+      type:     "POST",
+      dataType: "json",
+      success:  di.start_process_tables
+    })
   },
 
   /**
@@ -65,10 +60,7 @@ var di = {
    * the second contains the component type ("core" or "module"), and the remainder of the
    * array contains the table names.
    */
-  start_process_tables: function(transport)
-  {
-    var component_info = transport.responseText.evalJSON(true);
-
+  start_process_tables: function(component_info) {
     di.current_component_name   = component_info.tables.shift();
     di.current_component        = component_info.tables.shift();
     di.current_component_tables = component_info.tables;
@@ -80,7 +72,7 @@ var di = {
             + g.messages["text_tables_test"] + "\n";
 
     // if this isn't the first thing outputted to the log, add some visual padding
-    if ($("full_log").value != "")
+    if ($("#full_log").val() != "")
       log = "\n\n" + log;
 
     di.log_message(log);
@@ -90,42 +82,32 @@ var di = {
   },
 
 
-  process_tables: function()
-  {
-    var page_url = g.root_url + "/modules/database_integrity/global/code/actions.php";
-    new Ajax.Request(page_url, {
-      parameters: { action: "process_table", component: di.current_component, table_name: di.current_component_table },
-      method:     'post',
-      onSuccess:  di.display_table_test
+  process_tables: function() {
+    $.ajax({
+      url:      g.root_url + "/modules/database_integrity/global/code/actions.php",
+      data:     { action: "process_table", component: di.current_component, table_name: di.current_component_table },
+      type:     "POST",
+      dataType: "json",
+      success:  di.display_table_test
     });
   },
 
-  display_table_test: function(transport)
-  {
-    var results = transport.responseText.evalJSON(true);
-
+  display_table_test: function(results) {
     // check all the problem scenarios
     var has_problem = false;
-    if (!results.table_exists)
-    {
+    if (!results.table_exists) {
       di.log_error(di.current_component_name + " - " + g.messages["phrase_missing_table_c"] + results.table_name);
       has_problem = true;
-    }
-    else
-    {
-      if (results.missing_columns.length > 0)
-      {
-        for (var i=0; i<results.missing_columns.length; i++)
-        {
+    } else {
+      if (results.missing_columns.length > 0) {
+        for (var i=0; i<results.missing_columns.length; i++) {
           di.log_error(di.current_component_name + " - " + results.table_name + " - " + g.messages["phrase_missing_column_c"]
           + results.missing_columns[i]);
         }
         has_problem = true;
       }
-      if (results.invalid_columns.length > 0)
-      {
-        for (var i=0; i<results.invalid_columns.length; i++)
-        {
+      if (results.invalid_columns.length > 0) {
+        for (var i=0; i<results.invalid_columns.length; i++) {
           di.log_error(di.current_component_name + " - " + results.table_name + " - " + g.messages["phrase_invalid_column_c"]
             + results.invalid_columns[i].column + "\n"
             + "   - is: " + results.invalid_columns[i].invalid_values.is + "\n"
@@ -135,90 +117,70 @@ var di = {
       }
     }
 
-    if (!has_problem)
-    {
+    if (!has_problem) {
       di.log_message("- " + g.messages["phrase_table_looks_good_c"] + results.table_name);
-    }
-    else
-    {
+    } else {
       di.any_tested_component_has_problem = true;
       di.current_component_has_problems = true;
     }
 
     // now process the next table, continue to the next component or display the "complete" message
     var next_table = null;
-    for (var i=0; i<di.current_component_tables.length-1; i++)
-    {
-      if (di.current_component_tables[i] == di.current_component_table)
-      {
+    for (var i=0; i<di.current_component_tables.length-1; i++) {
+      if (di.current_component_tables[i] == di.current_component_table) {
         next_table = di.current_component_tables[i+1];
         break;
       }
     }
 
-    if (next_table != null)
-    {
+    if (next_table != null) {
       di.current_component_table = next_table;
       di.process_tables();
-    }
-    else
-    {
-      $("result__" + di.current_component).removeClassName("untested");
-      if (di.current_component_has_problems)
-      {
-        $("result__" + di.current_component).addClassName("failed");
-        $("result__" + di.current_component).innerHTML = g.messages["word_failed"];
-      }
-      else
-      {
-        $("result__" + di.current_component).addClassName("passed");
-        $("result__" + di.current_component).innerHTML = g.messages["word_passed"];
+    } else {
+      $("#result__" + di.current_component).removeClass("untested");
+      if (di.current_component_has_problems) {
+        $("#result__" + di.current_component).addClass("failed").html(g.messages["word_failed"]);
+      } else {
+        $("#result__" + di.current_component).addClass("passed").html(g.messages["word_passed"]);
       }
 
       var next_component = null;
-      for (var i=0; i<di.component_list.length-1; i++)
-      {
-        if (di.component_list[i] == di.current_component)
-        {
+      for (var i=0; i<di.component_list.length-1; i++) {
+        if (di.component_list[i] == di.current_component) {
           next_component = di.component_list[i+1];
           break;
         }
       }
-      if (next_component != null)
-      {
-      // reset some stuff for the next pass
+      if (next_component != null) {
+        // reset some stuff for the next pass
         di.current_component_has_problems = false;
         di.current_component_table = null;
         di.current_component = next_component;
-
         di.start_component_test();
-      }
+
       // here we're done!
-      else
-      {
-        if (di.any_tested_component_has_problem)
-          ft.display_message("ft_message", true, g.messages["notify_test_complete_problems"]);
-        else
-          ft.display_message("ft_message", true, g.messages["notify_test_complete_no_problems"]);
+      } else {
+        if (di.any_tested_component_has_problem) {
+          ft.display_message("ft_message", 1, g.messages["notify_test_complete_problems"]);
+        } else {
+          ft.display_message("ft_message", 1, g.messages["notify_test_complete_no_problems"]);
+        }
         return;
       }
     }
   },
 
-  clear_logs: function()
-  {
-    $("full_log").value = "";
-    $("error_log").value = "";
+  clear_logs: function() {
+    $("#full_log").val("");
+    $("#error_log").val("");
   },
 
-  log_error: function(error)
-  {
-    $("error_log").value += error + "\n\n";
+  log_error: function(error) {
+    $("#error_log").val($("#error_log").val() + error + "\n\n");
   },
 
-  log_message: function(message)
-  {
-    $("full_log").value += message + "\n";
+  log_message: function(message) {
+    $("#full_log").val($("#full_log").val() + message + "\n");
   }
 
 };

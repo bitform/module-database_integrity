@@ -9,16 +9,16 @@
  */
 function dbi_get_compatible_modules()
 {
-	global $g_root_dir;
+  global $g_root_dir;
 
   $module_list = ft_get_modules();
 
   $compatible_modules = array();
   foreach ($module_list as $module_info)
   {
-  	$module_folder = $module_info["module_folder"];
-  	if (!is_file("$g_root_dir/modules/$module_folder/database_integrity.php"))
-  	  continue;
+    $module_folder = $module_info["module_folder"];
+    if (!is_file("$g_root_dir/modules/$module_folder/database_integrity.php"))
+      continue;
 
     $compatible_modules[] = $module_info;
   }
@@ -37,33 +37,33 @@ function dbi_get_compatible_modules()
  */
 function dbi_generate_db_config_file($tables, $type = "module", $version = "")
 {
-	global $g_table_prefix;
+  global $g_table_prefix;
 
-	$init_str = "";
-	$version_str = "";
-	if (!empty($version))
-	{
-		$init_str = "\$STRUCTURE = array();";
-		$version_str = "[$version]";
-	}
+  $init_str = "";
+  $version_str = "";
+  if (!empty($version))
+  {
+    $init_str = "\$STRUCTURE = array();";
+    $version_str = "[\"$version\"]";
+  }
 
-	$html =<<< EOF
+  $html =<<< EOF
 $init_str
 \$STRUCTURE$version_str = array();
 \$STRUCTURE{$version_str}["tables"] = array();
 
 EOF;
 
-	foreach ($tables as $table_name)
-	{
-		$html .= '$STRUCTURE' . $version_str . '["tables"]["' . $table_name . '"] = array(' . "\n";
+  foreach ($tables as $table_name)
+  {
+    $html .= '$STRUCTURE' . $version_str . '["tables"]["' . $table_name . '"] = array(' . "\n";
 
-		$info = mysql_query("SHOW COLUMNS FROM {$g_table_prefix}$table_name");
-		$rows = array();
-		while ($row = mysql_fetch_assoc($info))
-		{
-			$default = preg_replace("/\\$/", "\\\\$", $row["Default"]);
-			$str =<<< EOF
+    $info = mysql_query("SHOW COLUMNS FROM {$g_table_prefix}$table_name");
+    $rows = array();
+    while ($row = mysql_fetch_assoc($info))
+    {
+      $default = preg_replace("/\\$/", "\\\\$", $row["Default"]);
+      $str =<<< EOF
   array(
     "Field"   => "{$row['Field']}",
     "Type"    => "{$row['Type']}",
@@ -73,13 +73,13 @@ EOF;
   )
 EOF;
       $rows[] = $str;
-	  }
+    }
 
-	  $html .= implode(",\n", $rows);
-	  $html .= "\n);\n";
-	}
+    $html .= implode(",\n", $rows);
+    $html .= "\n);\n";
+  }
 
-	return $html;
+  return $html;
 }
 
 
@@ -104,20 +104,20 @@ EOF;
  */
 function di_check_component_table($component_info, $table_name)
 {
-	// first, check the table exists
-	$results = array();
-	$table_exists = di_test_component_table_exists($component_info, $table_name);
-	$results["table_exists"] = $table_exists;
+  // first, check the table exists
+  $results = array();
+  $table_exists = di_test_component_table_exists($component_info, $table_name);
+  $results["table_exists"] = $table_exists;
 
-	// if the table exists, run tests on all the columns in the table
-	if ($table_exists)
-	{
+  // if the table exists, run tests on all the columns in the table
+  if ($table_exists)
+  {
     $info = di_check_component_table_columns($component_info, $table_name);
     $results["missing_columns"] = $info["missing_columns"];
     $results["invalid_columns"] = $info["invalid_columns"];
-	}
+  }
 
-	return $results;
+  return $results;
 }
 
 
@@ -130,47 +130,47 @@ function di_check_component_table($component_info, $table_name)
  */
 function di_check_component_table_columns($component_info, $table_name)
 {
-	global $g_table_prefix;
+  global $g_table_prefix;
 
-	$missing_columns = array();
-	$invalid_columns = array();
+  $missing_columns = array();
+  $invalid_columns = array();
 
-	// get the actual content of the db table (should be moved to helper)
+  // get the actual content of the db table (should be moved to helper)
   $actual_column_info_query = mysql_query("SHOW COLUMNS FROM $table_name");
   $actual_column_info = array();
-	while ($row = mysql_fetch_assoc($actual_column_info_query))
-	{
-		$default = preg_replace("/\\$/", "\\\\$", $row["Default"]);
-		$actual_column_info[$row['Field']] = array(
+  while ($row = mysql_fetch_assoc($actual_column_info_query))
+  {
+    $default = preg_replace("/\\$/", "\\\\$", $row["Default"]);
+    $actual_column_info[$row['Field']] = array(
       "Type" => $row['Type'],
-		  "Null" => $row['Null'],
-		  "Key"  => $row['Key'],
-		  "Default" => $default
-		);
+      "Null" => $row['Null'],
+      "Key"  => $row['Key'],
+      "Default" => $default
+    );
   }
 
-	$table_name_without_prefix = preg_replace("/{$g_table_prefix}/", "", $table_name);
+  $table_name_without_prefix = preg_replace("/{$g_table_prefix}/", "", $table_name);
   foreach ($component_info["tables"][$table_name_without_prefix] as $desired_column_info)
-	{
+  {
     $curr_column_name = $desired_column_info["Field"];
 
     // if the curr column name from the structure file isn't found in the ACTUAL column info list,
     // it's missing!
     if (!array_key_exists($curr_column_name, $actual_column_info))
     {
-    	$missing_columns[] = $curr_column_name;
-    	continue;
+      $missing_columns[] = $curr_column_name;
+      continue;
     }
 
     // now check each of the values
     $invalid_values = array();
     if ($desired_column_info["Type"] != $actual_column_info[$curr_column_name]["Type"])
     {
-    	$invalid_values = array(
-    	  "field"     => "Type",
+      $invalid_values = array(
+        "field"     => "Type",
         "should_be" => $desired_column_info["Type"],
-    	  "is" =>        $actual_column_info[$curr_column_name]["Type"]
-    	);
+        "is" =>        $actual_column_info[$curr_column_name]["Type"]
+      );
     }
 
     if (!empty($invalid_values))
@@ -180,12 +180,12 @@ function di_check_component_table_columns($component_info, $table_name)
         "invalid_values" => $invalid_values
       );
     }
-	}
+  }
 
-	return array(
-	  "missing_columns" => $missing_columns,
-	  "invalid_columns" => $invalid_columns
-	);
+  return array(
+    "missing_columns" => $missing_columns,
+    "invalid_columns" => $invalid_columns
+  );
 }
 
 /**
@@ -196,11 +196,11 @@ function di_check_component_table_columns($component_info, $table_name)
  */
 function di_test_component_table_exists($component_info, $table_name)
 {
-	$exists = false;
+  $exists = false;
   if (mysql_query("SELECT * FROM {$table_name}"))
     $exists = true;
 
-	return $exists;
+  return $exists;
 }
 
 
@@ -209,52 +209,8 @@ function di_get_component_tables($component_info)
   global $g_table_prefix;
 
   $tables = array();
-	while (list($table_name, $table_info) = each($component_info["tables"]))
-		$tables[] = "{$g_table_prefix}{$table_name}";
+  while (list($table_name, $table_info) = each($component_info["tables"]))
+    $tables[] = "{$g_table_prefix}{$table_name}";
 
   return $tables;
 }
-
-
-/*
-----------------------------------------------------------------------------------------------------
-These are the current core tables. I'll leave this in for future versions: it's easy to copy & paste
-this array to pass to dbi_generate_db_config_file() to regenerate the config file for new versions.
-----------------------------------------------------------------------------------------------------
-
-$tables = array(
-  "accounts",
-  "account_settings",
-  "client_forms",
-  "client_views",
-  "email_templates",
-  "email_template_edit_submission_views",
-  "email_template_recipients",
-  "field_options",
-  "field_option_groups",
-  "field_settings",
-  "forms",
-	"form_email_fields",
-	"form_fields",
-	"hooks",
-	"menus",
-	"menu_items",
-	"modules",
-	"module_export_groups",
-	"module_export_group_clients",
-	"module_export_types",
-	"module_extended_client_fields",
-	"module_extended_client_field_options",
-	"module_menu_items",
-	"multi_page_form_urls",
-	"public_form_omit_list",
-	"public_view_omit_list",
-	"settings",
-	"themes",
-	"views",
-	"view_fields",
-	"view_filters",
-	"view_tabs"
-);
-*/
-

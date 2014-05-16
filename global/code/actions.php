@@ -23,16 +23,16 @@ $settings = ft_get_settings();
 
 switch ($action)
 {
-	// called for the start of each component (i.e. the core, each module). All it does
-	// is return a list of tables to test.
+  // called for the start of each component (i.e. the core, each module). All it does
+  // is return a list of tables to test.
   case "start_component_test":
     $component = $request["component"];
 
     if ($component == "core")
     {
-    	$core_version = $settings["program_version"];
-    	require_once("$g_root_dir/modules/database_integrity/core_structure.php");
-    	$tables = array_merge(array("FORM TOOLS CORE", "core"), di_get_component_tables($STRUCTURE[$core_version]));
+      $core_version = $settings["program_version"];
+      require_once("$g_root_dir/modules/database_integrity/core_structure.php");
+      $tables = array_merge(array("FORM TOOLS CORE", "core"), di_get_component_tables($STRUCTURE[$core_version]));
     }
     else
     {
@@ -46,12 +46,12 @@ switch ($action)
 
   case "process_table":
     $component = $request["component"];
-  	if ($component == "core")
+    if ($component == "core")
     {
-    	$core_version = $settings["program_version"];
-    	require_once("$g_root_dir/modules/database_integrity/core_structure.php");
-    	$info = di_check_component_table($STRUCTURE[$core_version], $request["table_name"]);
-    	$info["table_name"] = $request["table_name"];
+      $core_version = $settings["program_version"];
+      require_once("$g_root_dir/modules/database_integrity/core_structure.php");
+      $info = di_check_component_table($STRUCTURE[$core_version], $request["table_name"]);
+      $info["table_name"] = $request["table_name"];
       echo ft_convert_to_json($info);
     }
     else
@@ -59,8 +59,8 @@ switch ($action)
       $module_info = ft_get_module($request["component"]); // $request["component"] is just the module ID
       $module_folder = $module_info["module_folder"];
       require_once("$g_root_dir/modules/$module_folder/database_integrity.php");
-    	$info = di_check_component_table($STRUCTURE, $request["table_name"]);
-    	$info["table_name"] = $request["table_name"];
+      $info = di_check_component_table($STRUCTURE, $request["table_name"]);
+      $info["table_name"] = $request["table_name"];
       echo ft_convert_to_json($info);
     }
     break;
