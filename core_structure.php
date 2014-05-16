@@ -2948,6 +2948,7 @@ $STRUCTURE["2.0.3"]["tables"]["view_tabs"] = array(
 
 // ------------------------------------------------------------------------------------------------
 
-// 2.0.4 and 2.0.5 have the same DB structure as 2.0.3
+// 2.0.4, 2.0.5 and 2.0.6 have the same DB structure as 2.0.3
 $STRUCTURE["2.0.4"] = $STRUCTURE["2.0.3"];
 $STRUCTURE["2.0.5"] = $STRUCTURE["2.0.3"];
+$STRUCTURE["2.0.6"] = $STRUCTURE["2.0.3"];
