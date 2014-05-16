@@ -939,6 +939,64 @@ $STRUCTURE["2.1.0"]["tables"]["forms"] = array(
 );
 $STRUCTURE["2.1.0"]["tables"]["hooks"] = array(
   array(
+    "Field"   => "id",
+    "Type"    => "mediumint(8) unsigned",
+    "Null"    => "NO",
+    "Key"     => "PRI",
+    "Default" => ""
+  ),
+  array(
+    "Field"   => "hook_type",
+    "Type"    => "enum('code','template')",
+    "Null"    => "NO",
+    "Key"     => "",
+    "Default" => ""
+  ),
+  array(
+    "Field"   => "component",
+    "Type"    => "enum('core','api','module')",
+    "Null"    => "NO",
+    "Key"     => "",
+    "Default" => ""
+  ),
+  array(
+    "Field"   => "filepath",
+    "Type"    => "varchar(255)",
+    "Null"    => "NO",
+    "Key"     => "",
+    "Default" => ""
+  ),
+  array(
+    "Field"   => "action_location",
+    "Type"    => "varchar(255)",
+    "Null"    => "NO",
+    "Key"     => "",
+    "Default" => ""
+  ),
+  array(
+    "Field"   => "function_name",
+    "Type"    => "varchar(255)",
+    "Null"    => "NO",
+    "Key"     => "",
+    "Default" => ""
+  ),
+  array(
+    "Field"   => "params",
+    "Type"    => "mediumtext",
+    "Null"    => "YES",
+    "Key"     => "",
+    "Default" => ""
+  ),
+  array(
+    "Field"   => "overridable",
+    "Type"    => "mediumtext",
+    "Null"    => "YES",
+    "Key"     => "",
+    "Default" => ""
+  )
+);
+$STRUCTURE["2.1.0"]["tables"]["hook_calls"] = array(
+  array(
     "Field"   => "hook_id",
     "Type"    => "mediumint(8) unsigned",
     "Null"    => "NO",
@@ -967,7 +1025,7 @@ $STRUCTURE["2.1.0"]["tables"]["hooks"] = array(
     "Default" => ""
   ),
   array(
-    "Field"   => "core_function",
+    "Field"   => "function_name",
     "Type"    => "varchar(255)",
     "Null"    => "NO",
     "Key"     => "",
