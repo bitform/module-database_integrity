@@ -1,14 +1,11 @@
-## module-database_integrity
+## Database Integrity module
 
-This module was written to help debug problems that arise with Form Tools. The module provides you with a couple of quick, simple tests to run on your database. This is well, well worth doing: in the very least to confirm that the problems you're encountering are not due to a corrupt database.
+> This module is deprecated. Please check out the [System Check](https://github.com/formtools/module-system_check) module for a newer version. That contains a superset of the functionality offered by this module.
 
-*Please note:* this module is deprecated. Please check out the [System Check](https://github.com/formtools/module-system_check) module for a newer version. That contains a superset of the functionality offered by this module.
 
-### Documentation
+### Other Links
 
-[http://modules.formtools.org/database_integrity/](http://modules.formtools.org/database_integrity/)
-
-### Form Tools Extensions
-
-For further information about Form Tools extensions, check out the following link:
-[http://www.formtools.org/extensions.php](http://www.formtools.org/extensions.php)
+- [Available Form Tools modules](https://modules.formtools.org/)
+- [About Form Tools modules](https://docs.formtools.org/userdoc/modules/) 
+- [Installation instructions](https://docs.formtools.org/userdoc/modules/installing/)
+- [Upgrading](https://docs.formtools.org/userdoc/modules/upgrading/)
